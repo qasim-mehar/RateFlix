@@ -56,20 +56,21 @@ export default function App() {
   const [watched, setWatched] = useState([]);
   const [isLoading, setisLoading]=useState(false);
   const [error,setError]=useState('')
-  const movieName="Grey"
+  const [query, setQuery] = useState("");
+  
   useEffect(function(){
     
     async function getMovies() {
       try{
         setError('');
         setisLoading(true);
-        const res = await fetch(`http://www.omdbapi.com/?s=${encodeURIComponent(movieName)}&apikey=dc5eb85`);
+        const res = await fetch(`http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=dc5eb85`);
         if (!res.ok) {
           throw new Error("😭 Something Went Wrong");
         }
 
         const data= await res.json();
-        console.log(data);
+        // console.log(data);
         if (data.Response==="False") {
 
           throw new Error("❌ Movie Not Found.");
@@ -87,15 +88,20 @@ export default function App() {
       setisLoading(false);
      }
     }
-    
+    //Call api only when there are 4 letters in the search bar and reset movies and error state if any
+    if(query.length<3){
+      setMovies([]);
+      setError('')
+      return;
+    }
     getMovies();
     
-  },[])
+  },[query])
 
   return (
     <>
       <NavBar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </NavBar>
 
@@ -141,8 +147,8 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({query,setQuery}) {
+  
 
   return (
     <input
