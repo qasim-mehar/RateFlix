@@ -60,7 +60,12 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedID, setSelectedID] =useState(null)
 console.log(movies);
- 
+  function handleAddWatchedMovies(movie){
+   setWatched(watched=>[...watched, movie])
+   setSelectedID(null);
+   console.log(movie.ID)
+   console.log(selectedID);
+  }
 //  console.log(watched);/
   useEffect(function(){
     
@@ -317,10 +322,10 @@ function WatchedMovie({ movie }) {
   );
 }
 
-function SelectedMovie({ID,onCloseBtn}){
+function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie}){
   const [selectedMovie, setSelectedMovie]=useState({});
   const [isLoading, setIsLoading]=useState(false);
-  // const [userRating,setUserRating]=useState(0);
+  const [userRating,setUserRating]=useState(0);
   useEffect(function(){
     async function getSelectedMovie() {
        setIsLoading(true)
@@ -343,15 +348,15 @@ function SelectedMovie({ID,onCloseBtn}){
 
     Director:director
   } =selectedMovie;
-  // function handleOnclick(){
-  //   const newWatchedMovie={
-  //     poster:poster,
-  //     title:title,
-  //     runtime:runtime,
-  //     userRating:userRating,
-  //   }
-  //   onAddWatchedMovie(newWatchedMovie);
-  // }
+  function handleOnclick(){
+    const newWatchedMovie={
+      poster:poster,
+      title:title,
+      runtime:runtime,
+      userRating:userRating,
+    }
+    onAddWatchedMovie(newWatchedMovie);
+  }
   return(
     <div className="details">
 
@@ -374,14 +379,13 @@ function SelectedMovie({ID,onCloseBtn}){
              <StarRating  
              maxRating={10} 
              size={24} 
-            //  onSetRating={rating=>setUserRating(Number(rating))}
+             onSetRating={rating=>setUserRating(Number(rating))}
              />
-             {
+             {userRating>0&&
              (
               <button 
-               className="btn-add"
-              //  onClick={handleOnclick}
-               >
+             className="btn-add"
+              onClick={handleOnclick}>
                 Add to list
               </button>)}
             </div>
