@@ -194,7 +194,7 @@ body {
 
   height: 1.8rem;
   aspect-ratio: 1;
-  border-radius: 50%;
+  border-radius: 70%;
   border: none;
   background-color: var(--color-red);
   color: var(--color-background-900);
