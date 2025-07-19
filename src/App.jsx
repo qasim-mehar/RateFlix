@@ -68,6 +68,10 @@ export default function App() {
    console.log(selectedID);
   }
 
+  function handleDeleteWatchedMovie(ID){
+   setWatched(watched=>watched.filter(movie=>movie.ID!==ID))
+  }
+
 //  console.log(watched);/
   useEffect(function(){
     
@@ -137,7 +141,7 @@ export default function App() {
                :
                 <>
                   <WatchedSummary watched={watched} />
-                  <WatchedMoviesList watched={watched} />
+                  <WatchedMoviesList onDeleteWatchedMovie={handleDeleteWatchedMovie} watched={watched} />
                 </>}
          </box>
         
@@ -277,32 +281,32 @@ function WatchedSummary({ watched }) {
         </p>
         <p>
           <span>⭐️</span>
-          <span>{avgImdbRating}</span>
+          <span>{avgImdbRating.toFixed(2)}</span>
         </p>
         <p>
           <span>🌟</span>
-          <span>{avgUserRating}</span>
+          <span>{avgUserRating.toFixed(2)}</span>
         </p>
         <p>
           <span>⏳</span>
-          <span>{avgRuntime} min</span>
+          <span>{avgRuntime.toFixed(2)} min</span>
         </p>
       </div>
     </div>
   );
 }
 
-function WatchedMoviesList({ watched }) {
+function WatchedMoviesList({ watched,onDeleteWatchedMovie }) {
   return (
     <ul className="list">
       {watched.map((movie) => (
-        <WatchedMovie movie={movie} key={movie.imdbID} />
+        <WatchedMovie movie={movie} key={movie.imdbID} onDeleteWatchedMovie={onDeleteWatchedMovie}/>
       ))}
     </ul>
   );
 }
 
-function WatchedMovie({ movie }) {
+function WatchedMovie({ movie,onDeleteWatchedMovie }) {
   return (
     <li>
       <img src={movie.poster} alt={`${movie.Title} poster`} />
@@ -320,6 +324,7 @@ function WatchedMovie({ movie }) {
           <span>⏳</span>
           <span>{movie.runtime} min</span>
         </p>
+        <button onClick={()=>onDeleteWatchedMovie(movie.ID)} className="btn-delete ">X</button>
       </div>
     </li>
   );
@@ -353,7 +358,7 @@ function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie,watched}){
     Runtime:runtime,
     Plot:plot,
     Actors:actors,
-    Rated:rated,
+    // Rated:rated,
     Genre:genre,
 
     Director:director
@@ -363,9 +368,11 @@ function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie,watched}){
       ID:ID,
       poster:poster,
       title:title,
-      runtime:runtime,
+      runtime:Number(runtime.split(" ").at(0)),
       userRating:userRating,
     }
+     console.log(newWatchedMovie)
+   
     onAddWatchedMovie(newWatchedMovie);
   }
   return(
