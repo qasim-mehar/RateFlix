@@ -128,15 +128,17 @@ export default function App() {
           {!isLoading && !error&& <MovieList onMovieSelect={setSelectedID}  movies={movies}/>}
           {error&& <ErrorMessage message={error}/>} 
         </Box>
-         <box>
+          <box>
 
-        {selectedID?
+             {selectedID?
         
                <SelectedMovie 
                onAddWatchedMovie={handleAddWatchedMovies} 
                onCloseBtn={setSelectedID} 
                ID={selectedID}
                watched={watched}
+               movies={movies}
+
                />
                :
                 <>
@@ -336,22 +338,8 @@ function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie,watched}){
   const [userRating,setUserRating]=useState(0);
   const isWatched=watched.map((movie)=>movie.ID).includes(ID);
   const watchedUserRating= watched.find(movie=>movie.ID===ID)?.userRating;
-  console.log(watchedUserRating)
-
-
-   console.log(isWatched);
-   
-  useEffect(function(){
-    async function getSelectedMovie() {
-       setIsLoading(true)
-      const res = await fetch(`http://www.omdbapi.com/?i=${encodeURIComponent(ID)}&apikey=dc5eb85`);
-      const data= await res.json();
-      setSelectedMovie(data);
-      setIsLoading(false)
-    }
-    getSelectedMovie();
-  },[ID])
-   const {
+  // const pageTitle=movies.find(movie=>movie.ID===ID)?.title;
+ const {
     Title:title,
     Poster:poster,
     Released:released,
@@ -363,6 +351,27 @@ function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie,watched}){
 
     Director:director
   } =selectedMovie;
+   
+  useEffect(function(){
+    async function getSelectedMovie() {
+       setIsLoading(true)
+      const res = await fetch(`http://www.omdbapi.com/?i=${encodeURIComponent(ID)}&apikey=dc5eb85`);
+      const data= await res.json();
+      setSelectedMovie(data);
+      setIsLoading(false)
+    }
+    getSelectedMovie();
+  },[ID])
+
+  useEffect(function(){
+    if(!title) return //it will simply make this useEffect wait untill title retreval.
+    document.title= `Movie | ${title}`;
+    //Cleanup Fun
+    return function(){
+      document.title= "usePopcorn";
+    }
+  },[title])
+   
   function handleOnclick(){
     const newWatchedMovie={
       ID:ID,
