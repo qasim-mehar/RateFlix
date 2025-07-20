@@ -71,8 +71,12 @@ export default function App() {
   function handleDeleteWatchedMovie(ID){
    setWatched(watched=>watched.filter(movie=>movie.ID!==ID))
   }
+  function handleCloseBtn(){
+    setSelectedID(null);
+  }
 
 //  console.log(watched);/
+ 
   useEffect(function(){
       const controller = new AbortController();
     async function getMovies() {
@@ -137,7 +141,7 @@ export default function App() {
         
                <SelectedMovie 
                onAddWatchedMovie={handleAddWatchedMovies} 
-               onCloseBtn={setSelectedID} 
+               onCloseBtn={handleCloseBtn} 
                ID={selectedID}
                watched={watched}
                movies={movies}
@@ -374,6 +378,17 @@ function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie,watched}){
       document.title= "usePopcorn";
     }
   },[title])
+
+   useEffect(function(){
+    function callback(e){
+      if(e.code==="Escape"){
+        onCloseBtn();
+      }
+    }
+    document.addEventListener("keydown",callback);
+
+    return ()=> document.removeEventListener("keydown",callback);
+  },[onCloseBtn])
    
   function handleOnclick(){
     const newWatchedMovie={
@@ -393,7 +408,7 @@ function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie,watched}){
       {isLoading?(<Loader/>):
        (<>
          <header>
-           <button onClick={()=>onCloseBtn(null)} className="btn-back">&larr;</button>
+           <button onClick={()=>onCloseBtn()} className="btn-back">&larr;</button>
            <img src={poster} alt={`Poster of ${title}`} />
            <div className="details-overview">
              <h2>{title}</h2>
