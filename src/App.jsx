@@ -74,12 +74,12 @@ export default function App() {
 
 //  console.log(watched);/
   useEffect(function(){
-    
+      const controller = new AbortController();
     async function getMovies() {
       try{
         setError('');
         setIsLoading(true);
-        const res = await fetch(`http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=dc5eb85`);
+        const res = await fetch(`http://www.omdbapi.com/?s=${encodeURIComponent(query)}&apikey=dc5eb85`,{signal:controller.signal});
         if (!res.ok) {
           throw new Error("😭 Something Went Wrong");
         }
@@ -96,8 +96,10 @@ export default function App() {
      }
      catch (err) {
        
-        console.log(err.message); // Log the message specifically
-        setError(err.message);
+        if(err.name!=="AbortError"){
+          setError(err.message);
+        }
+        
 }
      finally{
       setIsLoading(false);
@@ -111,7 +113,8 @@ export default function App() {
       return;
     }
     getMovies();
-    
+    //it will simply abort the ongoing effect when it rerender. so previous api call abort on a new one
+    return ()=> controller.abort();
   },[query])
 
   return (
