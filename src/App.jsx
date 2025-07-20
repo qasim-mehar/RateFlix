@@ -64,14 +64,13 @@ export default function App() {
   function handleAddWatchedMovies(movie){
    setWatched(watched=>[...watched, movie])
    setSelectedID(null);
-   console.log(movie.ID)
-   console.log(selectedID);
+   
   }
 
   function handleDeleteWatchedMovie(ID){
    setWatched(watched=>watched.filter(movie=>movie.ID!==ID))
   }
-  function handleCloseBtn(){
+  function handleCloseMovie(){
     setSelectedID(null);
   }
 
@@ -89,7 +88,7 @@ export default function App() {
         }
 
         const data= await res.json();
-        // console.log(data);
+      
         if (data.Response==="False") {
 
           throw new Error("❌ Movie Not Found.");
@@ -116,6 +115,7 @@ export default function App() {
       setError('')
       return;
     }
+    handleCloseMovie();
     getMovies();
     //it will simply abort the ongoing effect when it rerender. so previous api call abort on a new one
     return ()=> controller.abort();
@@ -141,7 +141,7 @@ export default function App() {
         
                <SelectedMovie 
                onAddWatchedMovie={handleAddWatchedMovies} 
-               onCloseBtn={handleCloseBtn} 
+               onCloseBtn={handleCloseMovie} 
                ID={selectedID}
                watched={watched}
                movies={movies}
@@ -398,7 +398,7 @@ function SelectedMovie({ID,onCloseBtn,onAddWatchedMovie,watched}){
       runtime:Number(runtime.split(" ").at(0)),
       userRating:userRating,
     }
-     console.log(newWatchedMovie)
+    
    
     onAddWatchedMovie(newWatchedMovie);
   }
