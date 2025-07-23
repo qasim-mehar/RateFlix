@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import './App.css'
 
@@ -177,6 +177,20 @@ function Logo() {
 }
 
 function Search({ query, setQuery }) {
+  const inputEl=useRef(null);
+  useEffect(function(){
+
+   function callback(e){
+    //if focus is already on search bar and user press enter it will make the search bar empty which we dont want.
+    if(document.activeElement === inputEl.current) return;
+    if(e.code==="Enter"){
+      inputEl.current.focus();
+      setQuery("");
+    }
+   }
+   document.addEventListener("keydown", callback);
+   return()=>document.removeEventListener("keydown", callback)
+  },[setQuery])
   return (
     <input
       className="search"
@@ -184,6 +198,7 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
