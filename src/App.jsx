@@ -12,10 +12,12 @@ const KEY = "f84fc31d";
 export default function App() {
   const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  //Whenevr a initial state of useState is depend on some computations make sure to pass a callback funnction instead of a function call, this process is called laxzy evaluation!
+    const [watched, setWatched] = useState(()=>JSON.parse(localStorage.getItem("watched")));
+  // const [watched, setWatched] = useState([]);
 
   /*
   useEffect(function () {
@@ -52,6 +54,10 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
+  //We are using a useEffect hook instead of eventHandler bec in eventhandler we have to manually tell what to do when we delete a watched movie but here in useEffect it is syncronized and manage data autonomusly.
+  useEffect(function(){
+  localStorage.setItem("watched", JSON.stringify(watched));
+  },[watched]);
   useEffect(
     function () {
       const controller = new AbortController();
