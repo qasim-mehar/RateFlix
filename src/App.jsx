@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import './App.css'
 import { useMovies } from "./useMovies";
+import { useLocalStorgeState } from "./useLocalStorageState";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -12,7 +13,7 @@ export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   //Whenevr a initial state of useState is depend on some computations make sure to pass a callback funnction instead of a function call, this process is called laxzy evaluation!
-    const [watched, setWatched] = useState(()=>JSON.parse(localStorage.getItem("watched")));
+    const [watched, setWatched] = useLocalStorgeState([],"watched");
   // const [watched, setWatched] = useState([]);
     const {movies,isLoading,error}= useMovies(query,handleCloseMovie);
   /*
