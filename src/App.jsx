@@ -3,6 +3,7 @@ import StarRating from "./StarRating";
 import './App.css'
 import { useMovies } from "./useMovies";
 import { useLocalStorgeState } from "./useLocalStorageState";
+import { useKey } from "./useKey";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -16,24 +17,7 @@ export default function App() {
     const [watched, setWatched] = useLocalStorgeState([],"watched");
   // const [watched, setWatched] = useState([]);
     const {movies,isLoading,error}= useMovies(query,handleCloseMovie);
-  /*
-  useEffect(function () {
-    console.log("After initial render");
-  }, []);
-
-  useEffect(function () {
-    console.log("After every render");
-  });
-
-  useEffect(
-    function () {
-      console.log("D");
-    },
-    [query]
-  );
-
-  console.log("During render");
-*/
+ 
 
   function handleSelectMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
@@ -50,13 +34,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  //We are using a useEffect hook instead of eventHandler bec in eventhandler we have to manually tell what to do when we delete a watched movie but here in useEffect it is syncronized and manage data autonomusly.
-  useEffect(function(){
-  localStorage.setItem("watched", JSON.stringify(watched));
-  },[watched]);
- 
-
   return (
     <>
       <NavBar>
@@ -129,19 +106,14 @@ function Logo() {
 
 function Search({ query, setQuery }) {
   const inputEl=useRef(null);
-  useEffect(function(){
-
-   function callback(e){
-    //if focus is already on search bar and user press enter it will make the search bar empty which we dont want.
+  useKey("Enter", callback);
+  
+  function callback(){
     if(document.activeElement === inputEl.current) return;
-    if(e.code==="Enter"){
-      inputEl.current.focus();
+     inputEl.current.focus();
       setQuery("");
-    }
-   }
-   document.addEventListener("keydown", callback);
-   return()=>document.removeEventListener("keydown", callback)
-  },[setQuery])
+  }
+  
   return (
     <input
       className="search"
@@ -234,6 +206,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
+  useKey("Escape",onCloseMovie);
 
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
@@ -268,22 +241,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onCloseMovie();
   }
 
-  useEffect(
-    function () {
-      function callback(e) {
-        if (e.code === "Escape") {
-          onCloseMovie();
-        }
-      }
-
-      document.addEventListener("keydown", callback);
-
-      return function () {
-        document.removeEventListener("keydown", callback);
-      };
-    },
-    [onCloseMovie]
-  );
+ 
 
   useEffect(
     function () {
